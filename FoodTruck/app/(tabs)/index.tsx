@@ -1,29 +1,21 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import { supabase } from "/Users/aryan/Desktop/Project/FoodTruckApp/FoodTruck/lib/supabase";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
-  const [message, setMessage] = useState("Testing Supabase...");
-
-  useEffect(() => {
-    const testConnection = async () => {
-      const { data, error } = await supabase.from("vendors").select("*");
-
-      if (error) {
-        console.log("ERROR:", error);
-        setMessage(`Error: ${error.message}`);
-      } else {
-        console.log("DATA:", data);
-        setMessage(`Success: fetched ${data.length} vendor(s)`);
-      }
-    };
-
-    testConnection();
-  }, []);
-
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>{message}</Text>
+      <Text>Home Screen</Text>
+      <Button
+        title="Open Vendor Test"
+        onPress={() =>
+          router.push({
+            pathname: "/vendor/[vendorId]" as any,
+            params: { vendorId: "2054e0d4-3d75-4c90-a814-bfb80bb12051" },
+          })
+        }
+      />
     </View>
   );
 }
