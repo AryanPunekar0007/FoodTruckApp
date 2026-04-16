@@ -1,31 +1,29 @@
-import { StyleSheet } from 'react-native';
+import { useEffect, useState } from "react";
+import { View, Text } from "react-native";
+import { supabase } from "/Users/aryan/Desktop/Project/FoodTruckApp/FoodTruck/lib/supabase";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+export default function HomeScreen() {
+  const [message, setMessage] = useState("Testing Supabase...");
 
-export default function TabOneScreen() {
+  useEffect(() => {
+    const testConnection = async () => {
+      const { data, error } = await supabase.from("vendors").select("*");
+
+      if (error) {
+        console.log("ERROR:", error);
+        setMessage(`Error: ${error.message}`);
+      } else {
+        console.log("DATA:", data);
+        setMessage(`Success: fetched ${data.length} vendor(s)`);
+      }
+    };
+
+    testConnection();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>{message}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
