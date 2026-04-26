@@ -169,6 +169,7 @@ export default function VendorScreen() {
             router.push({
               pathname: "/checkout",
               params: {
+                cart: JSON.stringify(cart),
                 total: cart
                   .reduce((sum, item) => sum + item.price * item.quantity, 0)
                   .toFixed(2),
