@@ -1,6 +1,7 @@
 import { View, Text, TextInput } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutScreen() {
   const { cart, total } = useLocalSearchParams();
@@ -49,9 +50,45 @@ export default function CheckoutScreen() {
 
       {/* Place Order Button */}
       <Text
-        onPress={() => {
+        onPress={async () => {
           if (!name) {
             alert("Please enter your name");
+            return;
+          }
+
+          //insert order
+          const { data: orderData, error: orderError } = await supabase
+            .from("orders")
+            .insert({
+              customer_name: name,
+              total: parseFloat(total as string),
+            })
+            .select()
+            .single();
+
+          if (orderError) {
+            console.error("Error creating order:", orderError);
+            alert("Failed to place order. Please try again.");
+            return;
+          }
+
+          const orderId = orderData.id;
+
+          // Insert order items
+          const orderItems = parsedCart.map((item: any) => ({
+            order_id: orderId,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          }));
+
+          const { error: itemsError } = await supabase
+            .from("order_items")
+            .insert(orderItems);
+
+          if (itemsError) {
+            console.error("Error inserting order items:", itemsError);
+            alert("Failed to save order items. Please contact support.");
             return;
           }
           console.log("ORDER:", {
