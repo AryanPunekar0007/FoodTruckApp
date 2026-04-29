@@ -1,5 +1,5 @@
-import { View, Text, Button } from "react-native";
 import { router } from "expo-router";
+import { Button, Text, View } from "react-native";
 
 export default function HomeScreen() {
   return (
@@ -15,6 +15,20 @@ export default function HomeScreen() {
           })
         }
       />
+
+      <Text
+        onPress={() => router.push("./vendor-dashboard")}
+        style={{
+          marginTop: 20,
+          padding: 10,
+          backgroundColor: "black",
+          color: "white",
+          textAlign: "center",
+          borderRadius: 8,
+        }}
+      >
+        Go to Vendor Dashboard
+      </Text>
     </View>
   );
 }

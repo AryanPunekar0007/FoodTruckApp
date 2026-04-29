@@ -1,5 +1,5 @@
 import { View, Text, TextInput } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -11,6 +11,9 @@ export default function CheckoutScreen() {
 
   const [name, setName] = useState("");
 
+  // State to manage loading state during order placement
+  const [loading, setLoading] = useState(false);
+
   return (
     <View style={{ flex: 1, padding: 20, backgroundColor: "white" }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Checkout</Text>
@@ -19,7 +22,7 @@ export default function CheckoutScreen() {
       <TextInput
         value={name}
         onChangeText={setName}
-        placeholder="Enter your name"
+        placeholder="Please enter your name"
         style={{
           borderWidth: 1,
           borderColor: "#ccc",
@@ -56,6 +59,8 @@ export default function CheckoutScreen() {
             return;
           }
 
+          setLoading(true);
+
           //insert order
           const { data: orderData, error: orderError } = await supabase
             .from("orders")
@@ -69,6 +74,7 @@ export default function CheckoutScreen() {
           if (orderError) {
             console.error("Error creating order:", orderError);
             alert("Failed to place order. Please try again.");
+            setLoading(false);
             return;
           }
 
@@ -88,7 +94,8 @@ export default function CheckoutScreen() {
 
           if (itemsError) {
             console.error("Error inserting order items:", itemsError);
-            alert("Failed to save order items. Please contact support.");
+            alert("Failed to save order items.");
+            setLoading(false);
             return;
           }
           console.log("ORDER:", {
@@ -97,6 +104,8 @@ export default function CheckoutScreen() {
             total,
           });
           alert("Order placed successfully!");
+          router.replace("/");
+          setLoading(false);
         }}
         style={{
           marginTop: 20,
